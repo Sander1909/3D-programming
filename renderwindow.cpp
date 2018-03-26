@@ -24,6 +24,7 @@
 #include "axis.h"
 #include "transform.h"
 
+#include "beziercurve.h"
 #include "plane.h"
 #include <ctime>
 
@@ -174,6 +175,11 @@ void RenderWindow::init()
     plainShaderAttribs();
     glBindVertexArray( 0 );
 
+    //Make Bezier curve
+    mBezierCurve = new BezierCurve("controlPoints.txt");
+    plainShaderAttribs();
+    glBindVertexArray(0);
+
     emit ready();   //tell the mainWindow that init is finished
 }
 
@@ -299,6 +305,13 @@ void RenderWindow::render(float deltaTime)
     mvpMatrix = *mPerspectiveMatrix * *mViewMatrix * *(mAxis->getModelMatrix());
     glUniformMatrix4fv( mMVPUniform, 1, GL_FALSE, mvpMatrix.constData());
     glDrawArrays(GL_LINES, 0, mAxis->mNumberOfVertices);
+    checkForGLerrors();
+
+    //Draw Bezier curve
+    glBindVertexArray(mBezierCurve->mVAO);
+    mvpMatrix = *mPerspectiveMatrix * *mViewMatrix * *(mBezierCurve->getModelMatrix());
+    glUniformMatrix4fv( mMVPUniform, 1, GL_FALSE, mvpMatrix.constData());
+    glDrawArrays(GL_LINE_STRIP, 0, mBezierCurve->mNumberOfVertices);
     checkForGLerrors();
 
     mContext->swapBuffers(this);

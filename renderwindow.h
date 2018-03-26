@@ -19,6 +19,7 @@ class SceneObject;
 class Texture;
 class Matrix4x4;
 class QMatrix4x4;
+class BezierCurve;
 
 class RenderWindow : public QWindow, protected QOpenGLFunctions_4_1_Core
 {
@@ -73,6 +74,8 @@ private:
     std::unique_ptr<SceneObject> mOctahedron2;
 
     std::unique_ptr<SceneObject> mAxis;
+
+    SceneObject* mBezierCurve;
 
     QBasicTimer mTimer;     //timer that drives the gameloop
     QTime mTimeStart;       //time variable that reads the actual FPS
