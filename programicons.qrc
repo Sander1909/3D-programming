@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/">
+        <file>icons/icons8-diamond-100.png</file>
+        <file>icons/icons8-diamond-filled-100.png</file>
+    </qresource>
+</RCC>
