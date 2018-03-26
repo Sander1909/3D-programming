@@ -23,7 +23,8 @@ SOURCES += main.cpp \
     plane.cpp \
     collisionhandler.cpp \
     light.cpp \
-    beziercurve.cpp
+    beziercurve.cpp \
+    surface3d.cpp
 
 HEADERS += \
     matrix4x4.h \
@@ -44,7 +45,8 @@ HEADERS += \
     constants.h \
     collisionhandler.h \
     light.h \
-    beziercurve.h
+    beziercurve.h \
+    surface3d.h
 
 FORMS += \
     mainwindow.ui

@@ -11,6 +11,7 @@
 #include <QMatrix4x4>
 #include <QMouseEvent>
 #include <QWheelEvent>
+#include <ctime>
 
 #include <memory>
 
@@ -24,9 +25,11 @@
 #include "axis.h"
 #include "transform.h"
 
-#include "beziercurve.h"
 #include "plane.h"
-#include <ctime>
+#include "constants.h"
+
+#include "beziercurve.h"
+#include "surface3d.h"
 
 RenderWindow::RenderWindow(const QSurfaceFormat &format, MainWindow *mainWindow)
     : mContext{0}, mInitialized{false}, mPosition{0.005f}, mRotation{0.1f}, mMainWindow{mainWindow}
@@ -76,7 +79,7 @@ void RenderWindow::init()
     mViewMatrix = std::unique_ptr<QMatrix4x4>(new QMatrix4x4);
     mPerspectiveMatrix = std::unique_ptr<QMatrix4x4>(new QMatrix4x4);
 
-    //perspectiv matrixAA
+    //perspectiv matrix
     setPerspectiveMatrix();
 
     //view matrix
@@ -107,47 +110,43 @@ void RenderWindow::init()
     mTexture1 = std::unique_ptr<Texture>(new Texture(texture_hund.c_str()));
     mTexture2 = std::unique_ptr<Texture>(new Texture(texture_uvtemplate.c_str()));
 
-    //Make a plane (floor)
-    mPlane1 = std::unique_ptr<SceneObject>(new Plane);
-    mPlane1->getTransform()->setPosition(0.f, 0.f, 0.f);
-    mPlane1->getTransform()->setRotation(90.f, 0.f, 0.f);
-    mPlane1->getTransform()->setScale(14.f, 14.f, 1.f);
-
+    //Make surface
+    mSurface = new surface3D(-2, 3, -2, 3, 3.5f);
     plainShaderAttribs();
     glBindVertexArray(0);
 
     //Wall 1
     mPlane2 = std::unique_ptr<SceneObject>(new Plane);
-    mPlane2->getTransform()->setPosition(7.f, 2.5f, 0.f);
+    mPlane2->getTransform()->setPosition(7.f, 1.f, 0.f);
     mPlane2->getTransform()->setRotation(0.f, 90.f, 0.f);
-    mPlane2->getTransform()->setScale(14.f, 5.f, 1.f);
+    mPlane2->getTransform()->setScale(14.f, 6.5f, 1.f);
 
     plainShaderAttribs();
     glBindVertexArray(0);
 
     //Wall 2
     mPlane3 = std::unique_ptr<SceneObject>(new Plane);
-    mPlane3->getTransform()->setPosition(0.f, 2.5f, 7.f);
+    mPlane3->getTransform()->setPosition(0.f, 1.f, 7.f);
     mPlane3->getTransform()->setRotation(0.f, 0.f, 0.f);
-    mPlane3->getTransform()->setScale(14.f, 5.f, 1.f);
+    mPlane3->getTransform()->setScale(14.f, 6.5f, 1.f);
 
     plainShaderAttribs();
     glBindVertexArray(0);
 
     //Wall 3
     mPlane4 = std::unique_ptr<SceneObject>(new Plane);
-    mPlane4->getTransform()->setPosition(-7.f, 2.5f, 0.f);
+    mPlane4->getTransform()->setPosition(-7.f, 1.f, 0.f);
     mPlane4->getTransform()->setRotation(0.f, -90.f, 0.f);
-    mPlane4->getTransform()->setScale(14.f, 5.f, 1.f);
+    mPlane4->getTransform()->setScale(14.f, 6.5f, 1.f);
 
     plainShaderAttribs();
     glBindVertexArray(0);
 
     //Wall 4
     mPlane5 = std::unique_ptr<SceneObject>(new Plane);
-    mPlane5->getTransform()->setPosition(0.f, 2.5f, -7.f);
+    mPlane5->getTransform()->setPosition(0.f, 1.f, -7.f);
     mPlane5->getTransform()->setRotation(0.f, 180.f, 0.f);
-    mPlane5->getTransform()->setScale(14.f, 5.f, 1.f);
+    mPlane5->getTransform()->setScale(14.f, 6.5f, 1.f);
 
     plainShaderAttribs();
     glBindVertexArray(0);
@@ -224,13 +223,6 @@ void RenderWindow::render(float deltaTime)
 
     QMatrix4x4 mvpMatrix;   //for use with plainShader
     glUseProgram(mColorShaderProgram->getProgram());
-
-    //Floor:
-    glBindVertexArray(mPlane1->mVAO);
-    mvpMatrix = *mPerspectiveMatrix * *mViewMatrix * *(mPlane1->getModelMatrix());
-    glUniformMatrix4fv( mMVPUniform, 1, GL_FALSE, mvpMatrix.constData());
-    glDrawArrays(GL_TRIANGLES, 0, mPlane1->mNumberOfVertices);
-    checkForGLerrors();
 
     //Wall 1:
     glBindVertexArray(mPlane2->mVAO);
@@ -312,6 +304,13 @@ void RenderWindow::render(float deltaTime)
     mvpMatrix = *mPerspectiveMatrix * *mViewMatrix * *(mBezierCurve->getModelMatrix());
     glUniformMatrix4fv( mMVPUniform, 1, GL_FALSE, mvpMatrix.constData());
     glDrawArrays(GL_LINE_STRIP, 0, mBezierCurve->mNumberOfVertices);
+    checkForGLerrors();
+
+    //Draw 3d surface
+    glBindVertexArray(mSurface->mVAO);
+    mvpMatrix = *mPerspectiveMatrix * *mViewMatrix * *(mSurface->getModelMatrix());
+    glUniformMatrix4fv( mMVPUniform, 1, GL_FALSE, mvpMatrix.constData());
+    glDrawElements(GL_TRIANGLES, static_cast<surface3D*>(mSurface)->getNumberofIndices() , GL_UNSIGNED_INT, 0);
     checkForGLerrors();
 
     mContext->swapBuffers(this);

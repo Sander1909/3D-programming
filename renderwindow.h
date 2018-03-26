@@ -8,7 +8,7 @@
 
 #include <memory>
 
-#include <constants.h>
+//#include <constants.h>
 
 class QOpenGLContext;
 class Shader;
@@ -20,6 +20,7 @@ class Texture;
 class Matrix4x4;
 class QMatrix4x4;
 class BezierCurve;
+class Surface3D;
 
 class RenderWindow : public QWindow, protected QOpenGLFunctions_4_1_Core
 {
@@ -76,6 +77,7 @@ private:
     std::unique_ptr<SceneObject> mAxis;
 
     SceneObject* mBezierCurve;
+    SceneObject* mSurface;
 
     QBasicTimer mTimer;     //timer that drives the gameloop
     QTime mTimeStart;       //time variable that reads the actual FPS
