@@ -43,7 +43,7 @@ public:
     ~surface3D();
     void createObject() override;
     void drawObject() override;
-    float function(int x, int y);
+    float function(float x, float y);
     std::vector<Vec3> getSurfaceNormals();
 
     void writeToFile(std::string fileName, unsigned int indices[], int arrayLength);

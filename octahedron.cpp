@@ -38,6 +38,11 @@ void Octahedron::drawObject()
 
 }
 
+void Octahedron::setYPosition(float yPos)
+{
+    getTransform()->setPosition(Vec3(getTransform()->getPosition().getX(), yPos + 1, getTransform()->getPosition().getZ()));
+}
+
 void Octahedron::makeTriangle(const Vec3 &v1, const Vec3 &v2, const Vec3 &v3)
 {
     mVertices[mIndex].set_xyz(v1.getX(), v1.getY(), v1.getZ());

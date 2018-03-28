@@ -97,7 +97,7 @@ void surface3D::drawObject()
 
 }
 
-float surface3D::function(int x, int y)
+float surface3D::function(float x, float y)
 {
     return (sin(x) + cos(y));
 }

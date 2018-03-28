@@ -15,6 +15,8 @@ public:
     void createObject() override;
     void drawObject() override;
 
+    void setYPosition(float yPos);
+
 private:
     void makeTriangle(const Vec3& v1, const Vec3& v2, const Vec3& v3);
     void subDivide(const Vec3& a, const Vec3& b, const Vec3& c, int n);

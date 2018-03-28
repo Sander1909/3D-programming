@@ -71,8 +71,8 @@ private:
     std::unique_ptr<SceneObject> mPlane4; //Wall 3
     std::unique_ptr<SceneObject> mPlane5; //Wall 4
 
-    std::unique_ptr<SceneObject> mOctahedron1;
-    std::unique_ptr<SceneObject> mOctahedron2;
+    SceneObject* mOctahedron1;
+    SceneObject* mOctahedron2;
 
     std::unique_ptr<SceneObject> mAxis;
 

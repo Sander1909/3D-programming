@@ -111,13 +111,13 @@ void RenderWindow::init()
     mTexture2 = std::unique_ptr<Texture>(new Texture(texture_uvtemplate.c_str()));
 
     //Make surface
-    mSurface = new surface3D(-2, 3, -2, 3, 3.5f);
+    mSurface = new surface3D(-7, 8, -7, 8);
     plainShaderAttribs();
     glBindVertexArray(0);
 
     //Wall 1
     mPlane2 = std::unique_ptr<SceneObject>(new Plane);
-    mPlane2->getTransform()->setPosition(7.f, 1.f, 0.f);
+    mPlane2->getTransform()->setPosition(7.f, 1.75f, 0.f);
     mPlane2->getTransform()->setRotation(0.f, 90.f, 0.f);
     mPlane2->getTransform()->setScale(14.f, 6.5f, 1.f);
 
@@ -126,7 +126,7 @@ void RenderWindow::init()
 
     //Wall 2
     mPlane3 = std::unique_ptr<SceneObject>(new Plane);
-    mPlane3->getTransform()->setPosition(0.f, 1.f, 7.f);
+    mPlane3->getTransform()->setPosition(0.f, 1.75f, 7.f);
     mPlane3->getTransform()->setRotation(0.f, 0.f, 0.f);
     mPlane3->getTransform()->setScale(14.f, 6.5f, 1.f);
 
@@ -135,7 +135,7 @@ void RenderWindow::init()
 
     //Wall 3
     mPlane4 = std::unique_ptr<SceneObject>(new Plane);
-    mPlane4->getTransform()->setPosition(-7.f, 1.f, 0.f);
+    mPlane4->getTransform()->setPosition(-7.f, 1.75f, 0.f);
     mPlane4->getTransform()->setRotation(0.f, -90.f, 0.f);
     mPlane4->getTransform()->setScale(14.f, 6.5f, 1.f);
 
@@ -144,7 +144,7 @@ void RenderWindow::init()
 
     //Wall 4
     mPlane5 = std::unique_ptr<SceneObject>(new Plane);
-    mPlane5->getTransform()->setPosition(0.f, 1.f, -7.f);
+    mPlane5->getTransform()->setPosition(0.f, 1.75f, -7.f);
     mPlane5->getTransform()->setRotation(0.f, 180.f, 0.f);
     mPlane5->getTransform()->setScale(14.f, 6.5f, 1.f);
 
@@ -152,7 +152,7 @@ void RenderWindow::init()
     glBindVertexArray(0);
 
     //Octahedron 1
-    mOctahedron1 = std::unique_ptr<SceneObject>(new Octahedron(1));
+    mOctahedron1 = new Octahedron(1);
     mOctahedron1->getTransform()->setPosition(5.f, 1.f, -5.f);
     mOctahedron1->setMass(5000.f);
     mOctahedron1->setForce(Vec3{rand()%15,0.f,rand()%15});
@@ -161,7 +161,7 @@ void RenderWindow::init()
     glBindVertexArray(0);
 
     //Octahedron 2
-    mOctahedron2 = std::unique_ptr<SceneObject>(new Octahedron(1));
+    mOctahedron2 = new Octahedron(1);
     mOctahedron2->getTransform()->setPosition(-5.f, 1.f, 0.f);
     mOctahedron2->setMass(5000.f);
     mOctahedron2->setForce(Vec3{rand()%15, 0.f, rand()%15});
@@ -312,6 +312,14 @@ void RenderWindow::render(float deltaTime)
     glUniformMatrix4fv( mMVPUniform, 1, GL_FALSE, mvpMatrix.constData());
     glDrawElements(GL_TRIANGLES, static_cast<surface3D*>(mSurface)->getNumberofIndices() , GL_UNSIGNED_INT, 0);
     checkForGLerrors();
+
+    static_cast<Octahedron*>(mOctahedron1)->setYPosition(static_cast<surface3D*>(mSurface)->
+                                                         function(mOctahedron1->getTransform()->getPosition().getX(),
+                                                         mOctahedron1->getTransform()->getPosition().getZ()));
+
+    static_cast<Octahedron*>(mOctahedron2)->setYPosition(static_cast<surface3D*>(mSurface)->
+                                                         function(mOctahedron2->getTransform()->getPosition().getX(),
+                                                         mOctahedron2->getTransform()->getPosition().getZ()));
 
     mContext->swapBuffers(this);
 }
