@@ -5,15 +5,19 @@
 
 class Light: public SceneObject
 {
-private:
+protected:
 
-    Vec3 color;
+    Vec3 mColor;
+    float mStrength;
 
 public:
     Light();
 
     void setColor(Vec3 inColor);
     Vec3 getColor();
+
+    void setStrength(float inStrength);
+    float getStrength();
 };
 
 #endif // LIGHT_H

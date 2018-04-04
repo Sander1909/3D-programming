@@ -24,7 +24,8 @@ SOURCES += main.cpp \
     collisionhandler.cpp \
     light.cpp \
     beziercurve.cpp \
-    surface3d.cpp
+    surface3d.cpp \
+    ambientlight.cpp
 
 HEADERS += \
     matrix4x4.h \
@@ -46,7 +47,8 @@ HEADERS += \
     collisionhandler.h \
     light.h \
     beziercurve.h \
-    surface3d.h
+    surface3d.h \
+    ambientlight.h
 
 FORMS += \
     mainwindow.ui
@@ -55,7 +57,9 @@ DISTFILES += \
     plainfragment.frag \
     plainvertex.vert \
     textureshader.frag \
-    textureshader.vert
+    textureshader.vert \
+    ambientfragment.frag \
+    ambientvertex.vert
 
 RESOURCES += \
     programicons.qrc

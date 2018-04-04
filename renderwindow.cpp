@@ -31,6 +31,8 @@
 #include "beziercurve.h"
 #include "surface3d.h"
 
+#include "ambientlight.h"
+
 RenderWindow::RenderWindow(const QSurfaceFormat &format, MainWindow *mainWindow)
     : mContext{0}, mInitialized{false}, mPosition{0.005f}, mRotation{0.1f}, mMainWindow{mainWindow}
 
@@ -58,6 +60,47 @@ RenderWindow::~RenderWindow()
 
 }
 
+void RenderWindow::compileShadersAndTextures()
+{
+    //shaders
+    std::string texture_vert = gsl::shaderFilePath + "textureshader.vert";
+    std::string texture_frag = gsl::shaderFilePath + "textureshader.frag";
+
+    mTextureShaderProgram = std::unique_ptr<Shader>(new Shader(texture_vert.c_str(), texture_frag.c_str()));
+
+    std::string color_vert = gsl::shaderFilePath + "plainvertex.vert";
+    std::string color_frag = gsl::shaderFilePath + "plainfragment.frag";
+
+    mColorShaderProgram = std::unique_ptr<Shader>(new Shader(color_vert.c_str(), color_frag.c_str()));
+
+    std::string ambient_vert = gsl::shaderFilePath + "ambientvertex.vert";
+    std::string ambient_frag = gsl::shaderFilePath + "ambientfragment.frag";
+
+    mAmbientColorProgram = std::unique_ptr<Shader>(new Shader(ambient_vert.c_str(), ambient_frag.c_str()));
+
+    //textures
+    std::string texture_hund = gsl::assetFilePath + "hund.bmp";
+    std::string texture_uvtemplate = gsl::assetFilePath + "uvtemplate.bmp";
+
+    mTexture1 = std::unique_ptr<Texture>(new Texture(texture_hund.c_str()));
+    mTexture2 = std::unique_ptr<Texture>(new Texture(texture_uvtemplate.c_str()));
+}
+
+void RenderWindow::initializeMatrices()
+{
+    mMVPmatrix = std::unique_ptr<QMatrix4x4>(new QMatrix4x4);
+    mViewMatrix = std::unique_ptr<QMatrix4x4>(new QMatrix4x4);
+    mPerspectiveMatrix = std::unique_ptr<QMatrix4x4>(new QMatrix4x4);
+
+    //perspectiv matrix
+    setPerspectiveMatrix();
+
+    //view matrix
+    mViewMatrix->setToIdentity();   //identity();
+    mViewMatrix->translate(0.f, -3.f, -10.f);
+    mViewMatrix->lookAt(QVector3D(0.f, 10.f, 15.f), QVector3D(0.f, 0.f, 0.f), QVector3D(0.f, 1.f, 0.f));
+}
+
 void RenderWindow::init()
 {
     srand(time(nullptr));
@@ -74,41 +117,14 @@ void RenderWindow::init()
     initializeOpenGLFunctions();
     startOpenGLDebugger();
 
-    //Initialize matrixes
-    mMVPmatrix = std::unique_ptr<QMatrix4x4>(new QMatrix4x4);
-    mViewMatrix = std::unique_ptr<QMatrix4x4>(new QMatrix4x4);
-    mPerspectiveMatrix = std::unique_ptr<QMatrix4x4>(new QMatrix4x4);
-
-    //perspectiv matrix
-    setPerspectiveMatrix();
-
-    //view matrix
-    mViewMatrix->setToIdentity();   //identity();
-    mViewMatrix->translate(0.f, -3.f, -10.f);
-    mViewMatrix->lookAt(QVector3D(0.f, 10.f, 15.f), QVector3D(0.f, 0.f, 0.f), QVector3D(0.f, 1.f, 0.f));
+    initializeMatrices();
 
     //general OpenGL stuff:
     glEnable(GL_DEPTH_TEST);    //enables depth sorting - must use GL_DEPTH_BUFFER_BIT in glClear
     glEnable(GL_CULL_FACE);     //draws only front side of models
-    glClearColor(0.2f, 0.2f, 0.2f,1.0f);    //color used in glClear GL_COLOR_BUFFER_BIT
+    //glClearColor(0.2f, 0.2f, 0.2f,1.0f);    //color used in glClear GL_COLOR_BUFFER_BIT
 
-    //Compile shaders:
-
-    std::string texture_vert = gsl::shaderFilePath + "textureshader.vert";
-    std::string texture_frag = gsl::shaderFilePath + "textureshader.frag";
-    std::string color_vert = gsl::shaderFilePath + "plainvertex.vert";
-    std::string color_frag = gsl::shaderFilePath + "plainfragment.frag";
-
-    mTextureShaderProgram = std::unique_ptr<Shader>(new Shader(texture_vert.c_str(), texture_frag.c_str()));
-    mColorShaderProgram = std::unique_ptr<Shader>(new Shader(color_vert.c_str(), color_frag.c_str()));
-
-    //make textures
-
-    std::string texture_hund = gsl::assetFilePath + "hund.bmp";
-    std::string texture_uvtemplate = gsl::assetFilePath + "uvtemplate.bmp";
-
-    mTexture1 = std::unique_ptr<Texture>(new Texture(texture_hund.c_str()));
-    mTexture2 = std::unique_ptr<Texture>(new Texture(texture_uvtemplate.c_str()));
+    compileShadersAndTextures();
 
     //Make surface
     mSurface = new surface3D(-7, 8, -7, 8);
@@ -156,6 +172,7 @@ void RenderWindow::init()
     mOctahedron1->getTransform()->setPosition(5.f, 1.f, -5.f);
     mOctahedron1->setMass(5000.f);
     mOctahedron1->setForce(Vec3{rand()%15,0.f,rand()%15});
+    mOctahedron1->setColor(Vec3(1.f, 0.f, 0.f));
 
     plainShaderAttribs();
     glBindVertexArray(0);
@@ -165,6 +182,7 @@ void RenderWindow::init()
     mOctahedron2->getTransform()->setPosition(-5.f, 1.f, 0.f);
     mOctahedron2->setMass(5000.f);
     mOctahedron2->setForce(Vec3{rand()%15, 0.f, rand()%15});
+    mOctahedron2->setColor(Vec3(0.f, 1.f, 0.f));
 
     plainShaderAttribs();
     glBindVertexArray(0);
@@ -179,31 +197,16 @@ void RenderWindow::init()
     plainShaderAttribs();
     glBindVertexArray(0);
 
+    mLight = new AmbientLight(Vec3(1.f, 0.f, 0.f), 1.f);
+
     emit ready();   //tell the mainWindow that init is finished
 }
-
-//Background--
-GLfloat red;
-GLfloat green;
-GLfloat blue;
-//------------
 
 float addForceTimer{0.f};
 
 void RenderWindow::render(float deltaTime)
 {
-    //--------------------------------disco--------------------------------//
-    red += 0.001f;
-    green += 0.002f;
-    blue += 0.003f;
-    glClearColor(fabs(sin(red)), fabs(sin(green)), fabs(sin(blue)), 1.0f);
-    if(red > M_PI * 2)
-        red = 0.f;
-    if(green > M_PI * 2)
-        green = 0.f;
-    if(blue > M_PI * 2)
-        blue = 0.f;
-    //---------------------------------------------------------------------//
+    //disco();
 
     mContext->makeCurrent(this); //must be called every frame (every time mContext->swapBuffers is called)
     initializeOpenGLFunctions();
@@ -549,5 +552,16 @@ void RenderWindow::timerEvent(QTimerEvent *)
     }
 }
 
-
-
+void RenderWindow::disco()
+{
+    red += 0.001f;
+    green += 0.002f;
+    blue += 0.003f;
+    glClearColor(fabs(sin(red)), fabs(sin(green)), fabs(sin(blue)), 1.0f);
+    if(red > M_PI * 2)
+        red = 0.f;
+    if(green > M_PI * 2)
+        green = 0.f;
+    if(blue > M_PI * 2)
+        blue = 0.f;
+}

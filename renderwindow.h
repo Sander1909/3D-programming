@@ -21,6 +21,7 @@ class Matrix4x4;
 class QMatrix4x4;
 class BezierCurve;
 class Surface3D;
+class AmbientLigth;
 
 class RenderWindow : public QWindow, protected QOpenGLFunctions_4_1_Core
 {
@@ -32,6 +33,12 @@ public:
     void exposeEvent(QExposeEvent *) override;
 
     void setWireframe(bool wireframe);
+
+    void disco();
+
+    void compileShadersAndTextures();
+
+    void initializeMatrices();
 
 signals:
     void ready();
@@ -49,6 +56,7 @@ private:
     bool mInitialized;
     std::unique_ptr<Shader> mTextureShaderProgram;
     std::unique_ptr<Shader> mColorShaderProgram;
+    std::unique_ptr<Shader> mAmbientColorProgram;
 
     GLint mModelMatrixUniform;
     GLint mViewMatrixUniform;
@@ -111,6 +119,15 @@ private:
 
     void textureShaderAttribs();
 
+    //Color and lighting
+    AmbientLigth *mLight;
+    //------------------
+
+    //Background--
+    GLfloat red;
+    GLfloat green;
+    GLfloat blue;
+    //------------
 protected:
     //    void mousePressEvent(QMouseEvent *event) override{}
     void mouseMoveEvent(QMouseEvent *event) override;

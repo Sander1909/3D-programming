@@ -25,6 +25,10 @@ private:
     int mRecursions;          //
     int mIndex;               // brukes i rekursjon, til å bygge m_vertices
 
+    //Colors and lighting
+    //Vec3 mColor;
+    //-------------------
+
 };
 
 #endif // OCTAHEDRON_H

@@ -53,7 +53,7 @@ public:
     void wallCollision();              //for render-loop
     //-----------------------------------
 
-    //collisionHandler *getCollisionHandler() const;
+    void setColor(Vec3 inColor);
 
 protected:
     Vertex* mVertices;
@@ -71,7 +71,11 @@ private:
     Vec3 force;
     Vec3 acc;
     float mass;
+
+    float previousY;
     //-------
+
+    Vec3 mColor;
 };
 
 #endif // SCENEOBJECT_H

@@ -7,10 +7,20 @@ Light::Light()
 
 void Light::setColor(Vec3 inColor)
 {
-    color = inColor;
+    mColor = inColor;
 }
 
 Vec3 Light::getColor()
 {
-    return color;
+    return mColor;
+}
+
+void Light::setStrength(float inStrength)
+{
+    mStrength = inStrength;
+}
+
+float Light::getStrength()
+{
+    return mStrength;
 }

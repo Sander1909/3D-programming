@@ -8,6 +8,8 @@ SceneObject::SceneObject() : mParent{nullptr}//, mCollision{new collisionHandler
     mTransform = std::shared_ptr<Transform>(new Transform(this));
     mModelMatrix = std::unique_ptr<QMatrix4x4>(new QMatrix4x4);
     mModelMatrix->setToIdentity();
+
+    previousY = getTransform()->getPosition().getY();
 }
 
 SceneObject::~SceneObject()
@@ -106,6 +108,19 @@ void SceneObject::applyForces(float deltaTime)
 {
     acc = force / mass;
     vel = vel + (acc * deltaTime);
+
+    //----------Gravity, not functional-------------//
+    /*if(getTransform()->getPosition().getY() < previousY)
+    {
+        vel = vel +(vel * 0.01f);
+    }
+
+    if(getTransform()->getPosition().getY() > previousY)
+    {
+        vel = vel + (vel * -1 * 0.01f);
+    }*/
+    //----------------------------------------------//
+
     getTransform()->setPosition(getTransform()->getPosition() + (vel * deltaTime));
 
     vel = vel * 0.99f;
@@ -114,6 +129,8 @@ void SceneObject::applyForces(float deltaTime)
     {
         vel = vel * 0;
     }
+
+    previousY = getTransform()->getPosition().getY();
 }
 
 void SceneObject::wallCollision()
@@ -144,8 +161,7 @@ void SceneObject::wallCollision()
     }
 }
 
-/*collisionHandler* SceneObject::getCollisionHandler() const
+void SceneObject::setColor(Vec3 inColor)
 {
-    return mCollision;
+    mColor = inColor;
 }
-*/
