@@ -22,6 +22,7 @@ class QMatrix4x4;
 class BezierCurve;
 class Surface3D;
 class AmbientLight;
+class Vec3;
 
 class RenderWindow : public QWindow, protected QOpenGLFunctions_4_1_Core
 {
@@ -122,7 +123,8 @@ private:
     void setPerspectiveMatrix();
 
     void plainShaderAttribs();
-    void ambientShaderAttribs();
+
+    void phongShaderAttribs();
 
     void textureShaderAttribs();
 
@@ -139,7 +141,7 @@ protected:
     //    void keyReleaseEvent(QKeyEvent *event) override{}
     void wheelEvent(QWheelEvent *event) override;
 
-    void timerEvent(QTimerEvent *) override;
+    void timerEvent(QTimerEvent *) override;    
 };
 
 #endif // RENDERWINDOW_H

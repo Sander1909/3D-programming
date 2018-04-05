@@ -53,7 +53,7 @@ public:
     void wallCollision();              //for render-loop
     //-----------------------------------
 
-    void setColor(Vec3 inColor);
+    //void setColor(Vec3 inColor);
 
 protected:
     Vertex* mVertices;
@@ -62,6 +62,8 @@ protected:
     std::shared_ptr<QMatrix4x4> mModelMatrix;
 
     GLuint mBufferObject;   //the Vertex Buffer Object for this object
+
+    Vec3 mObjectColor;
 
     //collisionHandler* mCollision;
 
@@ -75,7 +77,7 @@ private:
     float previousY;
     //-------
 
-    Vec3 mColor;
+    //Vec3 mColor;
 };
 
 #endif // SCENEOBJECT_H

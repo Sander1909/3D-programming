@@ -25,7 +25,8 @@ SOURCES += main.cpp \
     light.cpp \
     beziercurve.cpp \
     surface3d.cpp \
-    ambientlight.cpp
+    ambientlight.cpp \
+    diffuselight.cpp
 
 HEADERS += \
     matrix4x4.h \
@@ -48,7 +49,8 @@ HEADERS += \
     light.h \
     beziercurve.h \
     surface3d.h \
-    ambientlight.h
+    ambientlight.h \
+    diffuselight.h
 
 FORMS += \
     mainwindow.ui
@@ -59,7 +61,11 @@ DISTFILES += \
     textureshader.frag \
     textureshader.vert \
     ambientfragment.frag \
-    ambientvertex.vert
+    ambientvertex.vert \
+    diffusefragment.frag \
+    diffusevertex.vert \
+    phongfragment.frag \
+    phongvertex.vert
 
 RESOURCES += \
     programicons.qrc

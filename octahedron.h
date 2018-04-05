@@ -9,7 +9,7 @@ class Vec3;
 class Octahedron : public SceneObject
 {
 public:
-    Octahedron(int n = 0);
+    Octahedron(int n = 0, Vec3 inObjectColor = Vec3(1.f, 1.f, 1.f));
     ~Octahedron();
 
     void createObject() override;
@@ -24,10 +24,6 @@ private:
 
     int mRecursions;          //
     int mIndex;               // brukes i rekursjon, til å bygge m_vertices
-
-    //Colors and lighting
-    //Vec3 mColor;
-    //-------------------
 
 };
 

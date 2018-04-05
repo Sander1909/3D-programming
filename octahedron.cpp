@@ -5,8 +5,9 @@
 #include "matrix4x4.h"
 #include <QMatrix4x4>
 
-Octahedron::Octahedron(int n) : mRecursions(n), mIndex(0)
+Octahedron::Octahedron(int n, Vec3 inObjectColor) : mRecursions(n), mIndex(0)
 {
+    mObjectColor = inObjectColor;
     createObject();
 }
 
@@ -46,15 +47,18 @@ void Octahedron::setYPosition(float yPos)
 void Octahedron::makeTriangle(const Vec3 &v1, const Vec3 &v2, const Vec3 &v3)
 {
     mVertices[mIndex].set_xyz(v1.getX(), v1.getY(), v1.getZ());
-    mVertices[mIndex].set_normal(v1.getX(), v1.getY(), v1.getZ());
+    //mVertices[mIndex].set_normal(v1.getX(), v1.getY(), v1.getZ());
+    mVertices[mIndex].set_normal(mObjectColor);
     mVertices[mIndex].set_st(0.0f, 0.0f);
     ++mIndex;
     mVertices[mIndex].set_xyz(v2.getX(), v2.getY(), v2.getZ());
-    mVertices[mIndex].set_normal(v2.getX(), v2.getY(), v2.getZ());
+    //mVertices[mIndex].set_normal(v2.getX(), v2.getY(), v2.getZ());
+    mVertices[mIndex].set_normal(mObjectColor);
     mVertices[mIndex].set_st(1.0f, 0.0f);
     ++mIndex;
     mVertices[mIndex].set_xyz(v3.getX(), v3.getY(), v3.getZ());
-    mVertices[mIndex].set_normal(v3.getX(), v3.getY(), v3.getZ());
+    //mVertices[mIndex].set_normal(v3.getX(), v3.getY(), v3.getZ());
+    mVertices[mIndex].set_normal(mObjectColor);
     mVertices[mIndex].set_st(0.5f, 1.0f);
     ++mIndex;
 }

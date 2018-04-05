@@ -161,7 +161,8 @@ void SceneObject::wallCollision()
     }
 }
 
-void SceneObject::setColor(Vec3 inColor)
+/*void SceneObject::setColor(Vec3 inColor)
 {
-    mColor = inColor;
+    mObjectColor = inColor;
 }
+*/

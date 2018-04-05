@@ -185,21 +185,21 @@ void RenderWindow::init()
     glBindVertexArray(0);*/
 
     //Octahedron 1
-    mOctahedron1 = new Octahedron(1);
+    mOctahedron1 = new Octahedron(1, Vec3(0.f, 0.5f, 1.f));
     mOctahedron1->getTransform()->setPosition(5.f, 1.f, -5.f);
     mOctahedron1->setMass(5000.f);
     mOctahedron1->setForce(Vec3{float(rand()%15),0.f,float(rand()%15)});
-    mOctahedron1->setColor(Vec3(1.f, 0.f, 0.f));
+    //mOctahedron1->setColor(Vec3(1.f, 0.f, 0.f));
 
     plainShaderAttribs();
     glBindVertexArray(0);
 
     //Octahedron 2
-    mOctahedron2 = new Octahedron(1);
+    mOctahedron2 = new Octahedron(1, Vec3(1.f, 0.f, 0.f));
     mOctahedron2->getTransform()->setPosition(-5.f, 1.f, 0.f);
     mOctahedron2->setMass(5000.f);
     mOctahedron2->setForce(Vec3{float(rand()%15),0.f,float(rand()%15)});
-    mOctahedron2->setColor(Vec3(0.f, 1.f, 0.f));
+    //mOctahedron2->setColor(Vec3(0.f, 1.f, 0.f));
 
     plainShaderAttribs();
     glBindVertexArray(0);
@@ -215,7 +215,7 @@ void RenderWindow::init()
     glBindVertexArray(0);
 
     //Make ambient light
-    mAmbientLight = new AmbientLight(Vec3(1.f, 0.2f, 0.2f), 1.f);
+    mAmbientLight = new AmbientLight(Vec3(1.f, 1.f, 1.f), 1.f);
 
     emit ready();   //tell the mainWindow that init is finished
 }
@@ -394,7 +394,7 @@ void RenderWindow::plainShaderAttribs()
     //mMVPUniform = glGetUniformLocation( mColorShaderProgram->getProgram(), "matrix" );
 }
 
-void RenderWindow::ambientShaderAttribs()
+void RenderWindow::phongShaderAttribs()
 {
 
 }
