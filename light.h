@@ -18,6 +18,9 @@ public:
 
     void setStrength(float inStrength);
     float getStrength();
+
+    virtual void createObject() = 0;
+    virtual void drawObject() = 0;
 };
 
 #endif // LIGHT_H

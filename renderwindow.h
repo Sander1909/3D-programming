@@ -21,7 +21,7 @@ class Matrix4x4;
 class QMatrix4x4;
 class BezierCurve;
 class Surface3D;
-class AmbientLigth;
+class AmbientLight;
 
 class RenderWindow : public QWindow, protected QOpenGLFunctions_4_1_Core
 {
@@ -40,6 +40,8 @@ public:
 
     void initializeMatrices();
 
+    AmbientLight* getLight() const;
+
 signals:
     void ready();
     void error(const QString &msg);
@@ -56,7 +58,6 @@ private:
     bool mInitialized;
     std::unique_ptr<Shader> mTextureShaderProgram;
     std::unique_ptr<Shader> mColorShaderProgram;
-    std::unique_ptr<Shader> mAmbientColorProgram;
 
     GLint mModelMatrixUniform;
     GLint mViewMatrixUniform;
@@ -64,13 +65,17 @@ private:
 
     GLint mMVPUniform;
 
-    GLuint mBallVAO;
-    GLuint mTriangleVAO;
-    GLuint mAxisVAO;
+    //Color and lighting-------------------------
+    AmbientLight *mAmbientLight;
 
-    float mPosition;
-    float mRotation;
+    GLint mAmbientMVPUniform;
+    GLint mAmbientColorUniform;
+    GLint mAmbientLightPowerUniform;
 
+    std::unique_ptr<Shader> mAmbientColorProgram;
+    //-------------------------------------------
+
+    //Objects in scene-----------------------------
     std::unique_ptr<SceneObject> mTriangle1;
 
     std::unique_ptr<SceneObject> mPlane1; //Floor
@@ -86,6 +91,7 @@ private:
 
     SceneObject* mBezierCurve;
     SceneObject* mSurface;
+    //---------------------------------------------
 
     QBasicTimer mTimer;     //timer that drives the gameloop
     QTime mTimeStart;       //time variable that reads the actual FPS
@@ -116,18 +122,19 @@ private:
     void setPerspectiveMatrix();
 
     void plainShaderAttribs();
+    void ambientShaderAttribs();
 
     void textureShaderAttribs();
-
-    //Color and lighting
-    AmbientLigth *mLight;
-    //------------------
 
     //Background--
     GLfloat red;
     GLfloat green;
     GLfloat blue;
     //------------
+
+    GLuint mBallVAO;
+    GLuint mBallBufferObject;
+
 protected:
     //    void mousePressEvent(QMouseEvent *event) override{}
     void mouseMoveEvent(QMouseEvent *event) override;
