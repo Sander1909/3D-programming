@@ -84,6 +84,19 @@ void RenderWindow::compileShadersAndTextures()
 
     mTexture1 = std::unique_ptr<Texture>(new Texture(texture_hund.c_str()));
     mTexture2 = std::unique_ptr<Texture>(new Texture(texture_uvtemplate.c_str()));
+
+    //enable the matrixUniform in the plain color shader
+    mMVPUniform = glGetUniformLocation( mColorShaderProgram->getProgram(), "matrix" );
+
+    //enable the matrixUniforms for the Texture shader
+    mModelMatrixUniform = glGetUniformLocation( mTextureShaderProgram->getProgram(), "mMatrix" );
+    mViewMatrixUniform = glGetUniformLocation( mTextureShaderProgram->getProgram(), "vMatrix" );
+    mPerspectiveMatrixUniform = glGetUniformLocation( mTextureShaderProgram->getProgram(), "pMatrix" );
+
+    //enable the matrixUniform in the ambient color shader
+    mAmbientMVPUniform = glGetUniformLocation( mAmbientColorProgram->getProgram(), "matrix" );
+    mAmbientColorUniform = glGetUniformLocation( mAmbientColorProgram->getProgram(), "ambientColor" );
+    mAmbientLightPowerUniform = glGetUniformLocation( mAmbientColorProgram->getProgram(), "lightStrength" );
 }
 
 void RenderWindow::initializeMatrices()
@@ -98,19 +111,6 @@ void RenderWindow::initializeMatrices()
     mViewMatrix->setToIdentity();   //identity();
     mViewMatrix->translate(0.f, -3.f, -10.f);
     mViewMatrix->lookAt(QVector3D(0.f, 10.f, 15.f), QVector3D(0.f, 0.f, 0.f), QVector3D(0.f, 1.f, 0.f));
-
-    //enable the matrixUniform in the plain color shader
-    mMVPUniform = glGetUniformLocation( mColorShaderProgram->getProgram(), "matrix" );
-
-    //enable the matrixUniforms for the Texture shader
-    mModelMatrixUniform = glGetUniformLocation( mTextureShaderProgram->getProgram(), "mMatrix" );
-    mViewMatrixUniform = glGetUniformLocation( mTextureShaderProgram->getProgram(), "vMatrix" );
-    mPerspectiveMatrixUniform = glGetUniformLocation( mTextureShaderProgram->getProgram(), "pMatrix" );
-
-    //enable the matrixUniform in the ambient color shader
-    mAmbientMVPUniform = glGetUniformLocation( mAmbientColorProgram->getProgram(), "matrix" );
-    mAmbientColorUniform = glGetUniformLocation( mAmbientColorProgram->getProgram(), "ambientColor" );
-    mAmbientLightPowerUniform = glGetUniformLocation( mAmbientColorProgram->getProgram(), "lightPower" );
 }
 
 AmbientLight *RenderWindow::getLight() const
@@ -148,7 +148,7 @@ void RenderWindow::init()
     plainShaderAttribs();
     glBindVertexArray(0);
 
-    //Wall 1
+    /*//Wall 1
     mPlane2 = std::unique_ptr<SceneObject>(new Plane);
     mPlane2->getTransform()->setPosition(7.f, 1.75f, 0.f);
     mPlane2->getTransform()->setRotation(0.f, 90.f, 0.f);
@@ -182,48 +182,17 @@ void RenderWindow::init()
     mPlane5->getTransform()->setScale(14.f, 6.5f, 1.f);
 
     plainShaderAttribs();
-    glBindVertexArray(0);
+    glBindVertexArray(0);*/
 
     //Octahedron 1
     mOctahedron1 = new Octahedron(1);
-    mOctahedron1->getModelMatrix()->translate(0.f, 0.f, 0.f);
-
-    //Ball Vertex Array Object setup -
-    glGenVertexArrays( 1, &mBallVAO );
-    glBindVertexArray( mBallVAO );
-
-    //Vertex Buffer Object to hold vertices
-    glGenBuffers( 1, &mBallBufferObject );
-    glBindBuffer( GL_ARRAY_BUFFER, mBallBufferObject );
-    glBufferData( GL_ARRAY_BUFFER, mOctahedron1->mNumberOfVertices * sizeof(Vertex), mOctahedron1->vertices(), GL_STATIC_DRAW );  // 8 floats pr vertex
-
-    // 1rst attribute buffer : vertices
-    glVertexAttribPointer(
-                0,                  // attribute. No particular reason for 0, but must match the layout in the shader.
-                3,                  // size
-                GL_FLOAT,           // type
-                GL_FALSE,           // normalized?
-                sizeof( Vertex ),  // stride
-                (GLvoid*)0 );          // array buffer offset
-    glEnableVertexAttribArray(0);
-
-    // 2nd attribute buffer : colors
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ), (GLvoid*)( 3 * sizeof( GLfloat ) ) );
-    glEnableVertexAttribArray(1);
-
-    // 3rd attribute buffer : uvs
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof( Vertex ), (GLvoid*)( 6 * sizeof( GLfloat ) ) );
-    glEnableVertexAttribArray(2);
-
-    glBindVertexArray( 0 );
-
     mOctahedron1->getTransform()->setPosition(5.f, 1.f, -5.f);
     mOctahedron1->setMass(5000.f);
     mOctahedron1->setForce(Vec3{float(rand()%15),0.f,float(rand()%15)});
     mOctahedron1->setColor(Vec3(1.f, 0.f, 0.f));
 
-    //plainShaderAttribs();
-    //glBindVertexArray(0);
+    plainShaderAttribs();
+    glBindVertexArray(0);
 
     //Octahedron 2
     mOctahedron2 = new Octahedron(1);
@@ -246,7 +215,7 @@ void RenderWindow::init()
     glBindVertexArray(0);
 
     //Make ambient light
-    mAmbientLight = new AmbientLight(Vec3(1.f, 0.f, 0.f), 1.f);
+    mAmbientLight = new AmbientLight(Vec3(1.f, 0.2f, 0.2f), 1.f);
 
     emit ready();   //tell the mainWindow that init is finished
 }
@@ -276,7 +245,7 @@ void RenderWindow::render(float deltaTime)
     QMatrix4x4 mvpMatrix;   //for use with plainShader
     glUseProgram(mColorShaderProgram->getProgram());
 
-    //Wall 1:
+    /*//Wall 1:
     glBindVertexArray(mPlane2->mVAO);
     mvpMatrix = *mPerspectiveMatrix * *mViewMatrix * *(mPlane2->getModelMatrix());
     glUniformMatrix4fv( mMVPUniform, 1, GL_FALSE, mvpMatrix.constData());
@@ -302,7 +271,7 @@ void RenderWindow::render(float deltaTime)
     mvpMatrix = *mPerspectiveMatrix * *mViewMatrix * *(mPlane5->getModelMatrix());
     glUniformMatrix4fv( mMVPUniform, 1, GL_FALSE, mvpMatrix.constData());
     glDrawArrays(GL_TRIANGLES, 0, mPlane5->mNumberOfVertices);
-    checkForGLerrors();
+    checkForGLerrors();*/
 
     //Octahedron 1:
 //    glBindVertexArray(mOctahedron1->mVAO);
@@ -311,14 +280,14 @@ void RenderWindow::render(float deltaTime)
 //    glDrawArrays(GL_TRIANGLES, 0, mOctahedron1->mNumberOfVertices);
 //    checkForGLerrors();
 
-    glBindVertexArray(mBallVAO);
+    glBindVertexArray(mOctahedron1->mVAO);
     glUseProgram(mAmbientColorProgram->getProgram());
     mvpMatrix = *mPerspectiveMatrix * *mViewMatrix * *(mOctahedron1->getModelMatrix());
-    glUniformMatrix4fv( mAmbientMVPUniform, 1, GL_TRUE, mvpMatrix.constData());
+    glUniformMatrix4fv( mAmbientMVPUniform, 1, GL_FALSE, mvpMatrix.constData());
     glUniform3f(mAmbientColorUniform, mAmbientLight->getColor().getX(), mAmbientLight->getColor().getY(), mAmbientLight->getColor().getZ());
     glUniform1f(mAmbientLightPowerUniform, mAmbientLight->getStrength());
 
-    glDrawArrays(GL_TRIANGLES, 0, mOctahedron1->mNumberOfVertices); // divide by SizeOfVertex!
+    glDrawArrays(GL_TRIANGLES, 0, mOctahedron1->mNumberOfVertices);
     checkForGLerrors();
 
     mOctahedron1->applyForces(deltaTime);
@@ -329,6 +298,7 @@ void RenderWindow::render(float deltaTime)
     glUseProgram(mColorShaderProgram->getProgram());
     mvpMatrix = *mPerspectiveMatrix * *mViewMatrix * *(mOctahedron2->getModelMatrix());
     glUniformMatrix4fv( mMVPUniform, 1, GL_FALSE, mvpMatrix.constData());
+
     glDrawArrays(GL_TRIANGLES, 0, mOctahedron2->mNumberOfVertices);
     checkForGLerrors();
 
