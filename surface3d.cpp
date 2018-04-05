@@ -22,7 +22,7 @@ void surface3D::createObject()
 {
     mNumberOfVertices = ((yMax - yMin)*(xMax - xMin));
 
-    std::cout << "Vertices: " << mNumberOfVertices << std::endl;
+    //std::cout << "Vertices: " << mNumberOfVertices << std::endl;
 
     Vec3 position;
 

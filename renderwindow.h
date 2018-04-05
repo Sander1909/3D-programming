@@ -132,9 +132,6 @@ private:
     GLfloat blue;
     //------------
 
-    GLuint mBallVAO;
-    GLuint mBallBufferObject;
-
 protected:
     //    void mousePressEvent(QMouseEvent *event) override{}
     void mouseMoveEvent(QMouseEvent *event) override;
