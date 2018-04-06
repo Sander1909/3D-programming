@@ -6,7 +6,7 @@ Light::Light(Vec3 inColor, float inStrength, Vec3 inPosition)
     mStrength = inStrength;
     getTransform()->setPosition(inPosition);
 
-    mMesh = new Octahedron(2, Vec3(1.f, 0.f, 1.f));
+    mMesh = new Octahedron(2, Vec3(1.f, 1.f, 0.5f));
 }
 
 void Light::setColor(Vec3 inColor)

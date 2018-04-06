@@ -16,7 +16,7 @@ void main() {
     vec4 lightDir = normalize(lightPosition - fragPosition);
 
     float specularStrength = 0.5f;
-    vec4 viewDir = normalize(vec4(cameraPosition,1.f)- fragPosition);
+    vec4 viewDir = normalize(vec4(cameraPosition,1.f) - fragPosition);
 
     vec4 reflectDir = reflect(-lightDir, vertexColor);
     float spec = pow(max(dot(viewDir, reflectDir),0.f),32);
@@ -25,6 +25,7 @@ void main() {
     float diff = max(dot(vertexColor, lightDir),0.f);
     vec4 diffuse = diff * lightCol;
     vec4 result = (ambientColor + diffuse + specular) * vec4 (0.4f,0.4f,0.4f,1.f);
+    //vec4 result = (ambientColor + diffuse) * vec4 (0.4f,0.4f,0.4f,1.f);
 
     fragColor = result;
 }

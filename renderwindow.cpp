@@ -165,7 +165,7 @@ void RenderWindow::init()
     plainShaderAttribs();
     glBindVertexArray(0);
 
-    /*//Wall 1
+    //Wall 1
     mPlane2 = std::unique_ptr<SceneObject>(new Plane);
     mPlane2->getTransform()->setPosition(7.f, 1.75f, 0.f);
     mPlane2->getTransform()->setRotation(0.f, 90.f, 0.f);
@@ -199,13 +199,13 @@ void RenderWindow::init()
     mPlane5->getTransform()->setScale(14.f, 6.5f, 1.f);
 
     plainShaderAttribs();
-    glBindVertexArray(0);*/
+    glBindVertexArray(0);
 
     //Octahedron 1
     mOctahedron1 = new Octahedron(1, Vec3(0.f, 0.f, 1.f));
     mOctahedron1->getTransform()->setPosition(5.f, 1.f, -5.f);
     mOctahedron1->setMass(5000.f);
-    mOctahedron1->setForce(Vec3{float(rand()%15),0.f,float(rand()%15)});
+    //mOctahedron1->setForce(Vec3{float(rand()%15),0.f,float(rand()%15)});
     //mOctahedron1->setColor(Vec3(1.f, 0.f, 0.f));
 
     plainShaderAttribs();
@@ -215,7 +215,7 @@ void RenderWindow::init()
     mOctahedron2 = new Octahedron(1, Vec3(1.f, 0.f, 0.f));
     mOctahedron2->getTransform()->setPosition(-5.f, 1.f, 0.f);
     mOctahedron2->setMass(5000.f);
-    mOctahedron2->setForce(Vec3{float(rand()%15),0.f,float(rand()%15)});
+    //mOctahedron2->setForce(Vec3{float(rand()%15),0.f,float(rand()%15)});
     //mOctahedron2->setColor(Vec3(0.f, 1.f, 0.f));
 
     plainShaderAttribs();
@@ -235,7 +235,8 @@ void RenderWindow::init()
     //mAmbientLight = new AmbientLight(Vec3(1.f, 1.f, 1.f), 1.f);
 
     //Light
-    mLight = new Light(Vec3(0.1f, 0.2f, 0.3f), 1.f, Vec3(0.f, 10.f, 0.f));
+    mLight = new Light(Vec3(0.f, 0.f, 0.f), 1.f, Vec3(0.f, 10.f, 0.f));
+    mLight->setMass(5000.f);
     plainShaderAttribs();
     glBindVertexArray(0);
 
@@ -267,7 +268,7 @@ void RenderWindow::render(float deltaTime)
     QMatrix4x4 mvpMatrix;   //for use with plainShader
     glUseProgram(mColorShaderProgram->getProgram());
 
-    /*//Wall 1:
+    //Wall 1:
     glBindVertexArray(mPlane2->mVAO);
     mvpMatrix = *mPerspectiveMatrix * *mViewMatrix * *(mPlane2->getModelMatrix());
     glUniformMatrix4fv( mMVPUniform, 1, GL_FALSE, mvpMatrix.constData());
@@ -293,7 +294,7 @@ void RenderWindow::render(float deltaTime)
     mvpMatrix = *mPerspectiveMatrix * *mViewMatrix * *(mPlane5->getModelMatrix());
     glUniformMatrix4fv( mMVPUniform, 1, GL_FALSE, mvpMatrix.constData());
     glDrawArrays(GL_TRIANGLES, 0, mPlane5->mNumberOfVertices);
-    checkForGLerrors();*/
+    checkForGLerrors();
 
     //Octahedron 1:
 //    glBindVertexArray(mOctahedron1->mVAO);
@@ -318,9 +319,9 @@ void RenderWindow::render(float deltaTime)
     glUniformMatrix4fv(mPhongModelMatrixUniform, 1, GL_FALSE, (mOctahedron1->getModelMatrix()->constData()));
     glUniformMatrix4fv(mPhongViewMatrixUniform, 1, GL_FALSE, mViewMatrix->constData());
     glUniformMatrix4fv(mPhongProjectionMatrixUniform, 1, GL_FALSE, mPerspectiveMatrix->constData());
-    glUniform4f(mPhongAmbientColorUniform, mLight->getColor().getX(), mLight->getColor().getY(), mLight->getColor().getZ(), 1.f);
+    glUniform4f(mPhongAmbientColorUniform, mLight->getColor().getX(), mLight->getColor().getY(), mLight->getColor().getZ(), 0.f);
     glUniform4f(mPhongLightPositionUniform, mLight->getTransform()->getPosition().getX(), mLight->getTransform()->getPosition().getY(), mLight->getTransform()->getPosition().getZ(), 1.f);
-    glUniform3f(mPhongCameraPositionUniform, 1.f, 1.f, 1.f);
+    glUniform3f(mPhongCameraPositionUniform, 0.f, 0.f, 0.f);
 
     glDrawArrays(GL_TRIANGLES, 0, mOctahedron1->mNumberOfVertices);
     checkForGLerrors();
@@ -329,7 +330,7 @@ void RenderWindow::render(float deltaTime)
     mOctahedron1->wallCollision();
 //___________________________________________________
     mLight->getMesh()->getTransform()->setPosition(mLight->getTransform()->getPosition());
-    mLight->getTransform()->setPosition(mLight->getTransform()->getPosition().getX(), mLight->getTransform()->getPosition().getY() - 0.01f, mLight->getTransform()->getPosition().getZ());
+    //mLight->getTransform()->setPosition(mLight->getTransform()->getPosition().getX(), mLight->getTransform()->getPosition().getY() - 0.01f, mLight->getTransform()->getPosition().getZ());
     glBindVertexArray(mLight->getMesh()->mVAO);
     glUseProgram(mColorShaderProgram->getProgram());
     mvpMatrix = *mPerspectiveMatrix * *mViewMatrix * *(mLight->getMesh()->getModelMatrix());
@@ -337,6 +338,9 @@ void RenderWindow::render(float deltaTime)
 
     glDrawArrays(GL_TRIANGLES, 0, mLight->getMesh()->mNumberOfVertices);
     checkForGLerrors();
+
+    mLight->applyForces(deltaTime);
+    mLight->wallCollision();
 //__________________________________________________________-
 
     //Octahedron 2:
@@ -351,11 +355,14 @@ void RenderWindow::render(float deltaTime)
     mOctahedron2->applyForces(deltaTime);
     mOctahedron2->wallCollision();
 
-    //addForceTimer += deltaTime;
+    addForceTimer += deltaTime;
     if(addForceTimer > 3000.f) //add new force every 3rd sec
     {
-        mOctahedron1->setForce(Vec3{float(rand()%10),0.f,float(rand()%10)});
-        mOctahedron2->setForce(Vec3{float(rand()%10),0.f,float(rand()%10)});
+        //mOctahedron1->setForce(Vec3{float(rand()%10),0.f,float(rand()%10)});
+        //mOctahedron2->setForce(Vec3{float(rand()%10),0.f,float(rand()%10)});
+
+        mLight->setForce(Vec3{float(rand()%3),0.f,float(rand()%3)});
+
         addForceTimer = 0.f;
     }
 
@@ -450,7 +457,7 @@ void RenderWindow::plainShaderAttribs()
     glEnableVertexAttribArray(2);
 
     //enable the matrixUniform
-    //mMVPUniform = glGetUniformLocation( mColorShaderProgram->getProgram(), "matrix" );
+    mMVPUniform = glGetUniformLocation( mColorShaderProgram->getProgram(), "matrix" );
 }
 
 void RenderWindow::phongShaderAttribs()
