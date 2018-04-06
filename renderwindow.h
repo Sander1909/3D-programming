@@ -23,6 +23,7 @@ class BezierCurve;
 class Surface3D;
 class AmbientLight;
 class Vec3;
+class Light;
 
 class RenderWindow : public QWindow, protected QOpenGLFunctions_4_1_Core
 {
@@ -69,11 +70,24 @@ private:
     //Color and lighting-------------------------
     AmbientLight *mAmbientLight;
 
+    Light *mLight;
+
     GLint mAmbientMVPUniform;
     GLint mAmbientColorUniform;
     GLint mAmbientLightPowerUniform;
 
+    GLint mPhongMVPUniform;
+
+    GLint mPhongModelMatrixUniform;
+    GLint mPhongViewMatrixUniform;
+    GLint mPhongProjectionMatrixUniform;
+
+    GLint mPhongAmbientColorUniform;
+    GLint mPhongLightPositionUniform;
+    GLint mPhongCameraPositionUniform;
+
     std::unique_ptr<Shader> mAmbientColorProgram;
+    std::unique_ptr<Shader> mPhongShaderProgram;
     //-------------------------------------------
 
     //Objects in scene-----------------------------

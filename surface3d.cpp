@@ -33,7 +33,7 @@ void surface3D::createObject()
         {
             position = Vec3((i + xMin) * interval, function(i + xMin, j + yMin), (j + yMin) * interval);
 
-            mVertices[i*(xMax - xMin) + j] = Vertex(position, Vec3(0.7f, 0.7f, 0.7f), Vec2(0.f, 0.f));
+            mVertices[i*(xMax - xMin) + j] = Vertex(position, Vec3(0.f, 0.f, 0.f), Vec2(0.f, 0.f));
         }
     }
 
@@ -61,7 +61,6 @@ void surface3D::createObject()
             indexVector.push_back((i+1) + (j+1)*((yMax-yMin)));
         }
     }
-
 
     unsigned int indices[indexVector.size()];
 

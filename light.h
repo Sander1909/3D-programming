@@ -2,6 +2,7 @@
 #define LIGHT_H
 
 #include <sceneobject.h>
+#include "octahedron.h"
 
 class Light: public SceneObject
 {
@@ -10,8 +11,10 @@ protected:
     Vec3 mColor;
     float mStrength;
 
+    Octahedron *mMesh;
+
 public:
-    Light();
+    Light(Vec3 inColor = Vec3(0.f, 0.f, 0.f), float inStrength = 0.f, Vec3 inPosition = Vec3(0.f, 0.f, 0.f));
 
     void setColor(Vec3 inColor);
     Vec3 getColor();
@@ -19,8 +22,10 @@ public:
     void setStrength(float inStrength);
     float getStrength();
 
-    virtual void createObject() = 0;
-    virtual void drawObject() = 0;
+    Octahedron* getMesh();
+
+    virtual void createObject() override;
+    virtual void drawObject() override;
 };
 
 #endif // LIGHT_H

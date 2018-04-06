@@ -1,8 +1,12 @@
 #include "light.h"
 
-Light::Light()
+Light::Light(Vec3 inColor, float inStrength, Vec3 inPosition)
 {
+    mColor = inColor;
+    mStrength = inStrength;
+    getTransform()->setPosition(inPosition);
 
+    mMesh = new Octahedron(2, Vec3(1.f, 0.f, 1.f));
 }
 
 void Light::setColor(Vec3 inColor)
@@ -23,4 +27,19 @@ void Light::setStrength(float inStrength)
 float Light::getStrength()
 {
     return mStrength;
+}
+
+Octahedron *Light::getMesh()
+{
+    return mMesh;
+}
+
+void Light::createObject()
+{
+
+}
+
+void Light::drawObject()
+{
+
 }
